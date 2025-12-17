@@ -12,6 +12,8 @@ class BugPostSerializer(serializers.HyperlinkedModelSerializer):
         model = BugPost
         fields = '__all__'
 
+        read_only_fields = ('created_by',)
+
 class BugSolutionSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = BugSolution
