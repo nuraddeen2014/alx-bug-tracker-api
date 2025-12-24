@@ -17,8 +17,6 @@ from .models import (
     Tag,
 )
 
-#Authentication logic
-
         
 # BugPostCreate
 class BugPostCreateView(viewsets.ModelViewSet):
