@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.contrib.auth import get_user_model
 from accounts.serializers import RegisterSerializer
 from rest_framework.authtoken.models import Token
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.authentication import authenticate
 from rest_framework import (
     viewsets,
@@ -10,6 +10,7 @@ from rest_framework import (
     generics,
     response,
     status,
+    authentication,
     )
 User = get_user_model()
 
@@ -58,3 +59,14 @@ def login(request):
     return response.Response({
         'message':'Authentication failed',
     }, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+@authentication_classes([authentication.TokenAuthentication])
+@permission_classes([permissions.IsAuthenticated()])
+def logout(request):
+    request.user.auth_token.delete()
+
+    return response.Response({
+        'message': 'Logged out successfully',
+
+    }, status=status.HTTP_200_OK)
