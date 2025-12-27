@@ -16,12 +16,13 @@ from .models import (
     Comment,
     Tag,
 )
+from .permissions import OnlyAuthorEditsOrDeletes
 
         
 # BugPostCreate
 class BugPostCreateView(viewsets.ModelViewSet):
     authentication_classes = [authentication.SessionAuthentication, authentication.TokenAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated,]
     queryset = BugPost.objects.all()
     serializer_class = serializers.BugPostSerializer
 
@@ -33,12 +34,14 @@ class BugPostCreateView(viewsets.ModelViewSet):
     def get_permissions(self):
         if self.action in ['list', 'retrieve']:
             return [permissions.AllowAny()]
+        elif self.action in ['PUT', 'PATCH', 'DELETE']:
+            return [permissions.AllowAny(), OnlyAuthorEditsOrDeletes()]
         return [permissions.IsAuthenticated()]
 
 # BugSolutionCreate
 class BugSolutionCreateView(viewsets.ModelViewSet):
-    authentication_classes = [authentication.SessionAuthentication, authentication.TokenAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
+    # authentication_classes = [authentication.SessionAuthentication, authentication.TokenAuthentication]
+    # permission_classes = [permissions.IsAuthenticated]
     queryset = BugSolution.objects.all()
     serializer_class = serializers.BugSolutionSerializer
 
@@ -46,13 +49,29 @@ class BugSolutionCreateView(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
 
+    #Override to allow anonymous list/retrieve but require auth for create
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve']:
+            return [permissions.AllowAny()]
+        elif self.action in ['PUT', 'PATCH', 'DELETE']:
+            return [permissions.AllowAny(), OnlyAuthorEditsOrDeletes()]
+        return [permissions.IsAuthenticated()]
+    
 # CommentCreate
 class CommentCreateView(viewsets.ModelViewSet):
     authentication_classes = [authentication.SessionAuthentication, authentication.TokenAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated,]
     queryset = Comment.objects.all()
     serializer_class = serializers.CommentSerializer
 
     #Set the user who created the Comment
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
+
+    #Override to allow anonymous list/retrieve but require auth for create
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve']:
+            return [permissions.AllowAny()]
+        elif self.action in ['PUT', 'PATCH', 'DELETE']:
+            return [permissions.AllowAny(), OnlyAuthorEditsOrDeletes()]
+        return [permissions.IsAuthenticated()]

@@ -6,23 +6,6 @@ from .models import (
     Tag,
 )
 
-
-class BugPostSerializer(serializers.ModelSerializer):
-    created_by = serializers.ReadOnlyField(source='created_by.username')
-
-    class Meta:
-        model = BugPost
-        fields = '__all__'
-        read_only_fields = ('created_by',)
-
-class BugSolutionSerializer(serializers.ModelSerializer):
-    created_by = serializers.ReadOnlyField(source='created_by.username')
-
-    class Meta:
-        model = BugSolution
-        fields = '__all__'
-        read_only_fields = ('created_by',)
-
 class CommentSerializer(serializers.ModelSerializer):
     created_by = serializers.ReadOnlyField(source='created_by.username')
 
@@ -30,6 +13,26 @@ class CommentSerializer(serializers.ModelSerializer):
         model = Comment
         fields = '__all__'
         read_only_fields = ('created_by',)
+
+class BugSolutionSerializer(serializers.ModelSerializer):
+    created_by = serializers.ReadOnlyField(source='created_by.username')
+    comments = CommentSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = BugSolution
+        fields = '__all__'
+        read_only_fields = ('created_by',)
+
+class BugPostSerializer(serializers.ModelSerializer):
+    created_by = serializers.ReadOnlyField(source='created_by.username')
+    solutions = BugSolutionSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = BugPost
+        fields = '__all__'
+        read_only_fields = ('created_by',)
+
+
 
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
