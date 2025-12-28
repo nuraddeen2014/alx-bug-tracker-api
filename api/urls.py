@@ -5,12 +5,14 @@ from .views import (
     BugPostCreateView,
     BugSolutionCreateView,
     CommentCreateView,
+    TagCreateView,
 )
 
 router = DefaultRouter()
 router.register(r'bug-post', BugPostCreateView)
 router.register(r'bug-solution', BugSolutionCreateView)
 router.register(r'comment', CommentCreateView)
+router.register(r'tag', TagCreateView)
 
 urlpatterns = [
     path('api-token-auth/', obtain_auth_token, name='api_token_auth'),
