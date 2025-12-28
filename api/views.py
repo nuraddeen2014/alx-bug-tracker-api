@@ -75,3 +75,16 @@ class CommentCreateView(viewsets.ModelViewSet):
         elif self.action in ['PUT', 'PATCH', 'DELETE']:
             return [permissions.AllowAny(), OnlyAuthorEditsOrDeletes()]
         return [permissions.IsAuthenticated()]
+
+# TagCreate
+class TagCreateView(viewsets.ModelViewSet):
+    authentication_classes = [authentication.SessionAuthentication, authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated,permissions.IsAdminUser]
+    queryset = Tag.objects.all()
+    serializer_class = serializers.TagSerializer
+
+    #Override to allow anonymous list/retrieve but require admin for create
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve']:
+            return [permissions.AllowAny()]
+        return [permissions.IsAdminUser(),]
