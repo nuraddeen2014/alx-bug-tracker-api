@@ -64,6 +64,25 @@ class BugPostCreateView(viewsets.ModelViewSet):
         post.tags.add(tag)
         serializer = self.get_serializer(post)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    @action(detail=True, methods=['post'])
+    def remove_tags(self, request, pk=None):
+        post = self.get_object()
+
+        #Only author or admin removes tags
+        if request.user != post.created_by and not request.user.is_staff:
+            return Response({"detail":"You're not allowed to remove tags"}, status=status.HTTP_403_FORBIDDEN)
+        
+        tag_id = request.data.get('tag')
+        
+        if not tag_id:
+            return Response({"detail":"Tag id is required"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        tag = get_object_or_404(Tag, id=tag_id)
+        post.tag.add(tag)
+
+        serializer = self.get_serializer(post)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 # BugSolutionCreate
 class BugSolutionCreateView(viewsets.ModelViewSet):

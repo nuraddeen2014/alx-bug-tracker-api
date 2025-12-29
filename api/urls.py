@@ -19,4 +19,4 @@ urlpatterns = [
      path('', include(router.urls)),
 ]
 
-### Checkout the chatgpt workflow before anything ### Don't forget to pull the latest changes from main branch###
+### Push committed changes to feature origin ### Don't forget to pull the latest changes from main branch###
