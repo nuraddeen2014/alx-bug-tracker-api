@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth import get_user_model
-from accounts.serializers import RegisterSerializer
+from accounts.serializers import RegisterSerializer, UserProfileSerializer
 from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.authentication import authenticate
@@ -62,7 +62,7 @@ def login(request):
 
 @api_view(['POST'])
 @authentication_classes([authentication.TokenAuthentication])
-@permission_classes([permissions.IsAuthenticated()])
+@permission_classes([permissions.IsAuthenticated])
 def logout(request):
     request.user.auth_token.delete()
 
@@ -70,3 +70,18 @@ def logout(request):
         'message': 'Logged out successfully',
 
     }, status=status.HTTP_200_OK)
+
+@api_view(['GET', 'PATCH'])
+@authentication_classes([authentication.TokenAuthentication, authentication.SessionAuthentication])
+@permission_classes([permissions.IsAuthenticated])
+def profile(request):
+    if request.method == 'GET':
+        serializer = UserProfileSerializer(instance=request.user)
+        return response.Response(serializer.data)
+    
+    elif request.method == 'PATCH':
+        serializer = UserProfileSerializer(instance=request.user ,data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return response.Response(serializer.data, status=status.HTTP_200_OK)
+        return response.Response(serializer.errors, status=400)
