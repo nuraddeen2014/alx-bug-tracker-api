@@ -6,6 +6,11 @@ from .models import (
     Tag,
 )
 
+class TagSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tag
+        fields = '__all__'
+
 class CommentSerializer(serializers.ModelSerializer):
     created_by = serializers.ReadOnlyField(source='created_by.username')
 
@@ -26,15 +31,9 @@ class BugSolutionSerializer(serializers.ModelSerializer):
 class BugPostSerializer(serializers.ModelSerializer):
     created_by = serializers.ReadOnlyField(source='created_by.username')
     solutions = BugSolutionSerializer(many=True, read_only=True)
+    tags = TagSerializer(many=True, read_only=True)
 
     class Meta:
         model = BugPost
         fields = '__all__'
         read_only_fields = ('created_by',)
-
-
-
-class TagSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Tag
-        fields = '__all__'
