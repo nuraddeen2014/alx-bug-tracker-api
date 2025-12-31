@@ -20,7 +20,6 @@ class BugSolution(models.Model):
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    upvotes = models.ManyToManyField(User, related_name='upvoted_posts', blank=True, null=True)
 
 class Comment(models.Model):
     description = models.TextField()
@@ -34,3 +33,13 @@ class Tag(models.Model):
     slug = models.SlugField(max_length=60, unique=True, blank=True)
     post = models.ManyToManyField(BugPost, related_name='tags', blank=True)
 
+class Upvote(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    bug_solution = models.ForeignKey(BugSolution, on_delete=models.CASCADE, related_name='upvotes')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'bug_solution')
+
+    def __str__(self):
+        return f"{self.user.username}"

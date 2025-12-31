@@ -17,6 +17,7 @@ from .models import (
     BugSolution,
     Comment,
     Tag,
+    Upvote,
 )
 from .permissions import OnlyAuthorEditsOrDeletes
 
@@ -102,6 +103,42 @@ class BugSolutionCreateView(viewsets.ModelViewSet):
         elif self.action in ['PUT', 'PATCH', 'DELETE']:
             return [permissions.AllowAny(), OnlyAuthorEditsOrDeletes()]
         return [permissions.IsAuthenticated()]
+    
+    @action(detail=True, methods=['POST'], permission_classes=[permissions.IsAuthenticated])
+    def upvote(self, request, pk=None):
+        solution = self.get_object()
+        user = request.user
+
+        if solution.created_by == user:
+            return Response(
+                {'detail': 'You cannot vote on your own solution'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        vote, created = Upvote.objects.get_or_create(
+            user=user,
+            solution=solution
+        )
+
+        if not created:
+            # User already voted → unvote (toggle off)
+            vote.delete()
+            action = 'unvoted'
+            status_code = status.HTTP_200_OK
+        else:
+            # New vote → toggle on
+            action = 'voted'
+            status_code = status.HTTP_201_CREATED
+
+        serializer = self.get_serializer(solution)
+        return Response(
+            {
+                'action': action,
+                'solution': serializer.data
+            },
+            status=status_code
+        )
+
     
 # CommentCreate
 class CommentCreateView(viewsets.ModelViewSet):
