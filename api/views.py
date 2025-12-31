@@ -11,6 +11,7 @@ from rest_framework import (
     permissions,
     viewsets,
     status,
+    filters,
     )
 from .models import (
     BugPost,
@@ -30,6 +31,8 @@ class BugPostCreateView(viewsets.ModelViewSet):
     ]
     queryset = BugPost.objects.all()
     serializer_class = serializers.BugPostSerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['title']
 
     #Set the user who created the BugPost
     def perform_create(self, serializer):
