@@ -7,14 +7,6 @@ from .models import (
     Upvote,
 )
 
-class UpvoteSerializer(serializers.ModelSerializer):
-    user = serializers.ReadOnlyField(source='user.username')
-
-    class Meta:
-        model = Upvote
-        fields = '__all__'
-        read_only_fields = ('user',)
-
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag

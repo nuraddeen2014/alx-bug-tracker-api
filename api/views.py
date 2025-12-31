@@ -121,12 +121,12 @@ class BugSolutionCreateView(viewsets.ModelViewSet):
         )
 
         if not created:
-            # User already voted → unvote (toggle off)
+            # User already voted -> unvote (toggle off)
             vote.delete()
             action = 'unvoted'
             status_code = status.HTTP_200_OK
         else:
-            # New vote → toggle on
+            # New vote -> toggle on
             action = 'voted'
             status_code = status.HTTP_201_CREATED
 
