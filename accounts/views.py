@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth import get_user_model
-from accounts.serializers import RegisterSerializer, UserProfileSerializer
+from accounts.serializers import RegisterSerializer, UserProfileSerializer, UserSerializer
 from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.authentication import authenticate
@@ -85,3 +85,15 @@ def profile(request):
             serializer.save()
             return response.Response(serializer.data, status=status.HTTP_200_OK)
         return response.Response(serializer.errors, status=400)
+    
+class UserAPIView(generics.ListAPIView):
+    authentication_classes = [authentication.TokenAuthentication, authentication.SessionAuthentication]
+    permission_classes = [permissions.IsAdminUser]
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+class UserAPIDetailView(generics.RetrieveAPIView):
+    authentication_classes = [authentication.TokenAuthentication, authentication.SessionAuthentication]
+    permission_classes = [permissions.IsAdminUser]
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
