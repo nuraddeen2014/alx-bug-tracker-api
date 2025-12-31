@@ -1,6 +1,7 @@
 .vscode
 .env
 .venv/
-api/__pycache__/
 bug_tracker/__pycache__/
 accounts/__pycache__/
+__pycache__/
+*.pyc
