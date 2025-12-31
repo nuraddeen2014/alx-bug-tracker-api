@@ -4,7 +4,16 @@ from .models import (
     BugSolution,
     Comment,
     Tag,
+    Upvote,
 )
+
+class UpvoteSerializer(serializers.ModelSerializer):
+    user = serializers.ReadOnlyField(source='user.username')
+
+    class Meta:
+        model = Upvote
+        fields = '__all__'
+        read_only_fields = ('user',)
 
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
@@ -20,13 +29,34 @@ class CommentSerializer(serializers.ModelSerializer):
         read_only_fields = ('created_by',)
 
 class BugSolutionSerializer(serializers.ModelSerializer):
+    vote_count = serializers.SerializerMethodField()
+    has_voted = serializers.SerializerMethodField()
     created_by = serializers.ReadOnlyField(source='created_by.username')
     comments = CommentSerializer(many=True, read_only=True)
 
     class Meta:
         model = BugSolution
-        fields = '__all__'
+        fields = [
+            'id',
+            'description',
+            'created_by',
+            'created_at',
+            'updated_at',
+            'vote_count',
+            'has_voted',
+            'comments',
+        ]
         read_only_fields = ('created_by',)
+
+
+    def get_vote_count(self, obj):
+        return obj.upvotes.count()
+
+    def get_has_voted(self, obj):
+        user = self.context['request'].user
+        if user.is_anonymous:
+            return False
+        return obj.upvotes.filter(user=user).exists()
 
 class BugPostSerializer(serializers.ModelSerializer):
     created_by = serializers.ReadOnlyField(source='created_by.username')
