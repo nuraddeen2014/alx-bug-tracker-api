@@ -1,3 +1,4 @@
+from .filters import BugPostFilter
 from django.shortcuts import render, get_object_or_404
 from . import serializers
 from rest_framework.views import APIView
@@ -33,6 +34,7 @@ class BugPostCreateView(viewsets.ModelViewSet):
     serializer_class = serializers.BugPostSerializer
     filter_backends = [filters.SearchFilter]
     search_fields = ['title']
+    
 
     #Set the user who created the BugPost
     def perform_create(self, serializer):
@@ -83,7 +85,8 @@ class BugPostCreateView(viewsets.ModelViewSet):
             return Response({"detail":"Tag id is required"}, status=status.HTTP_400_BAD_REQUEST)
         
         tag = get_object_or_404(Tag, id=tag_id)
-        post.tag.add(tag)
+        # remove the tag from the post (fix: use post.tags.remove)
+        post.tags.remove(tag)
 
         serializer = self.get_serializer(post)
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -103,8 +106,9 @@ class BugSolutionCreateView(viewsets.ModelViewSet):
     def get_permissions(self):
         if self.action in ['list', 'retrieve']:
             return [permissions.AllowAny()]
-        elif self.action in ['PUT', 'PATCH', 'DELETE']:
-            return [permissions.AllowAny(), OnlyAuthorEditsOrDeletes()]
+        elif self.action in ['update', 'partial_update', 'destroy']:
+            # Only authenticated authors can edit/delete
+            return [permissions.IsAuthenticated(), OnlyAuthorEditsOrDeletes()]
         return [permissions.IsAuthenticated()]
     
     @action(detail=True, methods=['POST'], permission_classes=[permissions.IsAuthenticated])
@@ -120,7 +124,7 @@ class BugSolutionCreateView(viewsets.ModelViewSet):
 
         vote, created = Upvote.objects.get_or_create(
             user=user,
-            solution=solution
+            bug_solution=solution
         )
 
         if not created:
@@ -158,8 +162,9 @@ class CommentCreateView(viewsets.ModelViewSet):
     def get_permissions(self):
         if self.action in ['list', 'retrieve']:
             return [permissions.AllowAny()]
-        elif self.action in ['PUT', 'PATCH', 'DELETE']:
-            return [permissions.AllowAny(), OnlyAuthorEditsOrDeletes()]
+        elif self.action in ['update', 'partial_update', 'destroy']:
+            # Only authenticated authors can edit/delete
+            return [permissions.IsAuthenticated(), OnlyAuthorEditsOrDeletes()]
         return [permissions.IsAuthenticated()]
 
 # TagCreate

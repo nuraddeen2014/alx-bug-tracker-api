@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'api',
+    'django_filters'
 ]
 
 MIDDLEWARE = [
@@ -92,6 +93,15 @@ DATABASES = {
     }
 }
 
+# Use in-memory SQLite database when running tests to make it easy for
+# contributors to run tests locally without setting up MySQL.
+import sys
+if 'test' in sys.argv or os.getenv('USE_SQLITE_FOR_TESTS') == '1':
+    DATABASES['default'] = {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': ':memory:',
+    }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
@@ -128,3 +138,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend',
+    ],
+    # ...
+}

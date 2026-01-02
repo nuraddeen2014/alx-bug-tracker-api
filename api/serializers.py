@@ -21,6 +21,7 @@ class CommentSerializer(serializers.ModelSerializer):
         read_only_fields = ('created_by',)
 
 class BugSolutionSerializer(serializers.ModelSerializer):
+    bug_post = serializers.PrimaryKeyRelatedField(queryset=BugPost.objects.all())
     vote_count = serializers.SerializerMethodField()
     has_voted = serializers.SerializerMethodField()
     created_by = serializers.ReadOnlyField(source='created_by.username')
@@ -30,6 +31,7 @@ class BugSolutionSerializer(serializers.ModelSerializer):
         model = BugSolution
         fields = [
             'id',
+            'bug_post',
             'description',
             'created_by',
             'created_at',
