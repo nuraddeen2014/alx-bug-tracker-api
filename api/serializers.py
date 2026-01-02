@@ -11,14 +11,14 @@ class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
         fields = ['id', 'name', 'slug']
+        
 
 class CommentSerializer(serializers.ModelSerializer):
     created_by = serializers.ReadOnlyField(source='created_by.username')
 
     class Meta:
         model = Comment
-        fields = '__all__'
-        read_only_fields = ('created_by',)
+        fields = ['description', 'bug_solution', 'created_at', 'updated_at']
 
 class BugSolutionSerializer(serializers.ModelSerializer):
     bug_post = serializers.PrimaryKeyRelatedField(queryset=BugPost.objects.all())
@@ -54,7 +54,7 @@ class BugSolutionSerializer(serializers.ModelSerializer):
 
 class BugPostSerializer(serializers.ModelSerializer):
     created_by = serializers.ReadOnlyField(source='created_by.username')
-    solutions = BugSolutionSerializer(many=True, read_only=True)
+    # solutions = BugSolutionSerializer(many=True, read_only=True)
     tags = TagSerializer(many=True, read_only=True)
 
     class Meta:
