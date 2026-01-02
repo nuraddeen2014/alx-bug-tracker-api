@@ -18,7 +18,8 @@ class CommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = ['description', 'bug_solution', 'created_at', 'updated_at']
+        fields = ['id', 'description', 'bug_solution', 'created_by', 'created_at', 'updated_at']
+        read_only_fields = ('id', 'created_by', 'created_at', 'updated_at')
 
 class BugSolutionSerializer(serializers.ModelSerializer):
     bug_post = serializers.PrimaryKeyRelatedField(queryset=BugPost.objects.all())
