@@ -90,6 +90,14 @@ class BugPostCreateView(viewsets.ModelViewSet):
 
         serializer = self.get_serializer(post)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    #create an action that maps solutions to individual bug posts
+    @action(detail=True, methods=['get'])
+    def solutions(self, request, pk=None):
+        post = self.get_object()
+        solutions = post.solutions.all()
+        serializer = serializers.BugSolutionSerializer(solutions, many=True, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 # BugSolutionCreate
 class BugSolutionCreateView(viewsets.ModelViewSet):
