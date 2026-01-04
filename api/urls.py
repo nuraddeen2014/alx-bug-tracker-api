@@ -30,6 +30,8 @@ urlpatterns = [
     path('docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path('redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
     path('api-token-auth/', obtain_auth_token, name='api_token_auth'),
+    # keep this legacy path to satisfy tests and consumers expecting /api/api-token-auth/
+    path('api/api-token-auth/', obtain_auth_token, name='api_token_auth_api'),
     path('api/', include(router.urls)),
 ]
 
