@@ -22,6 +22,10 @@ from .models import (
     Upvote,
 )
 from .permissions import OnlyAuthorEditsOrDeletes
+from django.http import JsonResponse
+
+def health(request):
+    return JsonResponse({'status':'ok'})
 
         
 # BugPostCreate

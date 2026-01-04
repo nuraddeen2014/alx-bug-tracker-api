@@ -45,8 +45,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework.authtoken',
+    'drf_spectacular',
     'api',
-    'django_filters'
+    'django_filters',
 ]
 
 MIDDLEWARE = [
@@ -155,5 +156,11 @@ REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': [
         'django_filters.rest_framework.DjangoFilterBackend',
     ],
-    # ...
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'ALX Bug Tracker API',
+    'DESCRIPTION': 'API for reporting and solving bugs',
+    'VERSION': '1.0.0',
 }

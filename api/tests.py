@@ -185,3 +185,15 @@ class TagAPITests(APITestCase, APITestHelpers):
         self.auth_as(self.admin)
         res = self.client.post('/api/tag/', {'name': 't', 'slug': 't'}, format='json')
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+
+
+class MiscEndpointsTests(APITestCase):
+    def test_health_endpoint(self):
+        res = self.client.get('/health/')
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.json(), {'status': 'ok'})
+
+    def test_openapi_schema_available(self):
+        res = self.client.get('/openapi/')
+        # Accept either 200 OK or 302 if auth redirects; primarily assert it's reachable
+        self.assertIn(res.status_code, (status.HTTP_200_OK, status.HTTP_302_FOUND))
